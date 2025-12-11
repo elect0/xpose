@@ -2,6 +2,7 @@
 log
 
 config.yaml
+db/dbconfig.yml
 config.json
 settings.yaml
 settings.json
