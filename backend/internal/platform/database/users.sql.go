@@ -66,7 +66,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 const getUserById = `-- name: GetUserById :one
 SELECT id, username, email, profile_pic_url, verified, created_at, updated_at
 FROM users
-WHERE id = $1
+WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
@@ -104,6 +104,25 @@ func (q *Queries) UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) 
 		arg.ProfilePicUrl,
 		arg.Verified,
 	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.ProfilePicUrl,
+		&i.Verified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const verifyUserById = `-- name: VerifyUserById :one
+UPDATE users SET verified = TRUE WHERE id = $1 RETURNING id, username, email, profile_pic_url, verified, created_at, updated_at
+`
+
+func (q *Queries) VerifyUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, verifyUserById, id)
 	var i User
 	err := row.Scan(
 		&i.ID,

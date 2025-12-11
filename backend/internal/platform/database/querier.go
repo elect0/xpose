@@ -11,11 +11,17 @@ import (
 )
 
 type Querier interface {
+	CreateCode(ctx context.Context, arg CreateCodeParams) (Code, error)
 	CreateUser(ctx context.Context, email string) (User, error)
+	DeleteCode(ctx context.Context, id uuid.UUID) error
+	DeleteExpiredCodes(ctx context.Context) error
 	DeleteUserById(ctx context.Context, id uuid.UUID) error
+	GetCode(ctx context.Context, arg GetCodeParams) (Code, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
+	MarkCodeUsed(ctx context.Context, id uuid.UUID) error
 	UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) (User, error)
+	VerifyUserById(ctx context.Context, id uuid.UUID) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

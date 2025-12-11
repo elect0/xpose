@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/elect0/xpose/backend/db"
+	"github.com/elect0/xpose/backend/internal/api"
+	"github.com/elect0/xpose/backend/internal/api/handlers"
 	"github.com/elect0/xpose/backend/internal/config"
+	"github.com/elect0/xpose/backend/internal/platform/database"
 	"github.com/elect0/xpose/backend/internal/platform/logger"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
@@ -33,9 +35,12 @@ func main() {
 
 	e := echo.New()
 
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	})
+	queries := database.New(db)
 
-	e.Start("localhost:2020")
+	handlers := handlers.New(logger, config, db, queries)
+
+	api.SetupRoutes(e, handlers, db)
+
+	logger.Info("server starting on: ", zap.String("Port", config.App.Port))
+	e.Logger.Fatal(e.Start(config.App.Port))
 }
