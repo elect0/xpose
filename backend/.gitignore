@@ -1,0 +1,11 @@
+*.tmp
+/log
+
+/config.yaml
+/config.json
+/settings.yaml
+/settings.json
+.env
+
+*.db
+*.sqlite

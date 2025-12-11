@@ -1,0 +1,22 @@
+app:
+  environment: "development"
+  port: ":8080"
+
+db:
+  source: "postgresql://neondb_owner:npg_29RpFcsBibyM@ep-small-dust-agcsdj20-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+#
+# redis:
+#   address: "localhost:6379"
+#   password: ""
+#   db: 0
+#
+# nats:
+#   url: "nats://localhost:4222"
+#
+# s3:
+#   bucket: "name"
+#   region: "eu-central-1"
+#
+jwt:
+  secret: "fb12c85f4499ff79efefc203df09d9f70678d7989150c8d721056232e5c1736e"
+  duration_minutes: 60
