@@ -3,8 +3,7 @@ app:
   port: ":8080"
 
 db:
-  source: "postgresql://neondb_owner:npg_29RpFcsBibyM@ep-small-dust-agcsdj20-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-#
+  source: "postgres://xpose:asdfgklsdgkl@localhost:6869/xpose_db?sslmode=disable"
 # redis:
 #   address: "localhost:6379"
 #   password: ""

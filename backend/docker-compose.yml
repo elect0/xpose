@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: xpose-postgres
+    ports:
+      - "6869:5432"
+    environment:
+      POSTGRES_USER: xpose
+      POSTGRES_PASSWORD: asdfgklsdgkl
+      POSTGRES_DB: xpose_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - xpose-network
+
+  # (Optional) Redis, since you mentioned using it
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - xpose-network
+
+networks:
+  xpose-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
