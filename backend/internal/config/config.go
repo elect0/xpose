@@ -14,8 +14,8 @@ type Config struct {
 	DB struct {
 		Source string
 	}
-	JWT struct {
-		Secret          string
+	Paseto struct {
+		Asymmetrical         string
 		DurationMinutes int
 	}
 }

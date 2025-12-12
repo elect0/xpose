@@ -36,6 +36,10 @@ type UserResponse struct {
 	Verified   bool      `json:"verified" example:"TRUE"`
 }
 
+type CodeResponse struct {
+	Code string `json:"code" example:"FXMuYFtVxYtD"`
+}
+
 // RegisterUser godoc
 // @Summary      Register User
 // @Description  Registers a new user.
@@ -43,7 +47,7 @@ type UserResponse struct {
 // @Accept       json
 // @Produce      json
 // @Param        customer body AuthUserRequest true "User details"
-// @Success      201  {object} UserResponse
+// @Success      201  {object} CodeResponse
 // @Router       /auth/register [post]
 func (h *Handlers) RegisterUser(c echo.Context) error {
 	var req AuthUserRequest
@@ -78,11 +82,8 @@ func (h *Handlers) RegisterUser(c echo.Context) error {
 	h.Logger.Info("Code generated", zap.String("code", userCode.Code))
 	// email service later
 
-	return c.JSON(200, UserResponse{
-		ID:         user.ID,
-		Email:      user.Email,
-		ProfilePic: user.ProfilePicUrl.String,
-		Verified:   user.Verified.Bool,
+	return c.JSON(200, CodeResponse{
+		Code: userCode,
 	})
 }
 
@@ -134,14 +135,27 @@ func (h *Handlers) ValidateCode(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Commit failed")
 	}
 
-	// token logic later
+	token, err := h.TokenMaker.CreateToken(user.ID, time.Duration(h.Config.Paseto.DurationMinutes))
+	if err != nil {
+		h.Logger.Warn("Failed to create user token", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "access_token"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(time.Duration(h.Config.Paseto.DurationMinutes))
+	cookie.HttpOnly = true
+	cookie.Secure = true
+	cookie.Path = "/"
+	cookie.SameSite = http.SameSiteStrictMode
+
+	c.SetCookie(cookie)
 
 	return c.JSON(200, UserResponse{
 		ID:         user.ID,
 		Username:   user.Username.String,
 		Email:      user.Email,
 		ProfilePic: user.ProfilePicUrl.String,
-
-		// token logic later
 	})
 }

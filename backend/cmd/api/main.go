@@ -1,12 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"aidanwoods.dev/go-paseto"
 	"github.com/elect0/xpose/backend/db"
 	"github.com/elect0/xpose/backend/internal/api"
 	"github.com/elect0/xpose/backend/internal/api/handlers"
 	"github.com/elect0/xpose/backend/internal/config"
+	"github.com/elect0/xpose/backend/internal/platform/auth"
 	"github.com/elect0/xpose/backend/internal/platform/database"
 	"github.com/elect0/xpose/backend/internal/platform/logger"
 	"github.com/labstack/echo/v4"
@@ -37,7 +40,12 @@ func main() {
 
 	queries := database.New(db)
 
-	handlers := handlers.New(logger, config, db, queries)
+	tokenMaker, err := auth.NewTokenMaker(config.Paseto.Asymmetrical)
+	if err != nil {
+		logger.Fatal("Coudln't initialize token maker", zap.Error(err))
+	}
+
+	handlers := handlers.New(logger, config, db, queries, tokenMaker)
 
 	api.SetupRoutes(e, handlers, db)
 
